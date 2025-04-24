@@ -1,15 +1,16 @@
+"use client"
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/libs/firebase';
+// import {useRouter} from "next/navigation";
 
 export default function LoginPage() {
+    // const router = useRouter();
+
     const handleLogin = async () => {
         const provider = new GoogleAuthProvider();
         try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            console.log('✅ 로그인 성공:', user.displayName, user.email);
-            // 로그인 성공 후 redirect
-            window.location.href = '/challenges';
+            await signInWithPopup(auth, provider);
+            // router.push('/challenges');
         } catch (err) {
             console.error('❌ 로그인 에러:', err);
         }
