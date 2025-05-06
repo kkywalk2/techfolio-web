@@ -1,6 +1,7 @@
 "use client"
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { auth } from '@/libs/firebase';
+import {GoogleAuthProvider, signInWithPopup} from 'firebase/auth';
+import {auth} from '@/libs/firebase';
+import {setCookie} from "nookies";
 // import {useRouter} from "next/navigation";
 
 export default function LoginPage() {
@@ -9,8 +10,20 @@ export default function LoginPage() {
     const handleLogin = async () => {
         const provider = new GoogleAuthProvider();
         try {
-            await signInWithPopup(auth, provider);
-            // router.push('/challenges');
+            const result = await signInWithPopup(auth, provider);
+
+            const user = result.user;
+
+            if (user) {
+                const idToken = await user.getIdToken();
+
+                // 쿠키로 저장
+                setCookie(null, "Authorization", `Bearer ${idToken}`, {
+                    path: "/",
+                    maxAge: 60 * 60, // 1시간
+                    secure: process.env.NODE_ENV === "production",
+                });
+            }
         } catch (err) {
             console.error('❌ 로그인 에러:', err);
         }
